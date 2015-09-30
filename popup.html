@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<title>京东夺宝岛秒杀神器,给最2的你.</title></head>
+<body>
+<pre>京东夺宝岛秒杀神器,给最2的你.<br /></pre>
+<!-- <a id="a" href="#">点击获取输入框中的关键字<br /></a> -->
+<text href="#">价格上限(元)<br /></text>
+<input type="text" id="price" value="" size="30"   
+          onmouseover=this.focus();this.select();   
+          onclick="if(value==defaultValue){value='';this.style.color='#000'}"   
+          onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999" />
+<text href="#">加价(元)<br /></text>
+<input type="text" id="add_price" value="10" size="30"   
+          onmouseover=this.focus();this.select();   
+          onclick="if(value==defaultValue){value='';this.style.color='#000'}"   
+          onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999" />
+<text href="#">出价时间(秒)<br /></text>
+<input type="text" id="shot_time" value="1" size="30"   
+          onmouseover=this.focus();this.select();   
+          onclick="if(value==defaultValue){value='';this.style.color='#000'}"   
+          onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999" />
+<input type="checkbox" id="cbox" checked="checked" onclick="if(this.checked) {add_price_input.disabled=false}else{add_price_input.disabled=true}">仅在最后时刻出上限价
+<button id="submit_btn" type="button">确定</button>
+<script src="popup.js"></script>
+</body>
+</html>
