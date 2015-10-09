@@ -1,9 +1,119 @@
-var buyFun = function(price, add_price, shot_time, checkbox) {
-	console.log("buyFun-上限价格:" + price + "元");
-	console.log("buyFun-增加幅度:" + add_price + "元");
-	console.log("buyFun-提交时间:最后" + shot_time + "秒");
-	console.log("buyFun-仅最后时刻提交上限价格:" + checkbox);
+var timeout_id;
 
+chrome.extension.onMessage.addListener(
+	function(msg, _, sendResponse) {
+		if (msg.add) {
+			//var keyText = document.getElementById('bid-info').children[0].children[0].innerText;
+			//if (keyText == "即将拍卖") {
+			if(0){
+				console.log("Not start yet!!!");
+				return true;
+
+				///////time countdown
+				var timeString = document.getElementById('product-intro').children[1].children[1].children[4].children[0].innerText;
+				var str = timeString.replace("小时", ",").replace("分", ",").replace("秒", ",");
+				var strs = new Array(); //定义一数组 
+				var secs = 0;
+				strs = str.split(","); //字符分割
+				if (strs.length == 4) {
+					secs = strs[0] * 3600;
+					secs += strs[1] * 60;
+					secs += parseInt(strs[2]);
+				} else if (strs.length == 3) {
+					secs = strs[0] * 60;
+					secs += parseInt(strs[1]);
+				} else if (strs.length == 2) {
+					secs = parseInt(strs[0]);
+				} else {
+					alert("Get left time error:" + timeString);
+				}
+				console.log("距离开拍:" + strs[0] + ":" + strs[1] + ":" + strs[2]);
+				console.log("等待" + secs + "秒" + "开拍");
+				sendResponse({
+					time: secs
+				});
+
+				// setTimeout(function() {
+				// 	buyFun(request.price, request.add_price, request.shot_time, request.checkbox);
+				// }, (secs + 60) * 1000);
+			} else {
+				console.log("set price: " + msg.price);
+				console.log("set shot-time: " + msg.shot_time);
+				var time1 = document.getElementById('auction3Timer').children[0];
+				var time2 = document.getElementById('auction3Timer').children[1];
+				var time3 = document.getElementById('auction3Timer').children[2];
+				var time;
+				var counter = 0;
+				var secs = 0;
+
+				if (time1) {
+					counter++;
+					time = time1.innerText;
+				}
+
+				if (time2) {
+					counter++;
+					time += time2.innerText;
+				}
+
+				if (time3) {
+					counter++;
+					time += time3.innerText;
+				}
+
+				if (counter == 3) {
+					secs = time1.innerText * 3600;
+					secs += time2.innerText * 60;
+					secs += parseInt(time3.innerText);
+				} else if (counter == 2) {
+					secs = time1.innerText * 60;
+					secs += parseInt(time2.innerText);
+				} else if (counter == 1) {
+					secs = parseInt(time1.innerText);
+				} else {
+					alert("Get left time error:" + time);
+					return;
+				}
+
+				sendResponse({
+					time: secs
+				});
+
+				ontime_buy(msg.price, msg.shot_time, secs);
+			}
+		} else if (msg.del) {
+			clearTimeout(timeout_id);
+		}
+	}
+);
+
+var ontime_buy = function(price, shot_time, left_time) {
+	console.log("ontime_buy--price: " + price);
+	console.log("ontime_buy--shot-time: " + shot_time);
+	console.log("ontime_buy--left-time: " + left_time);
+
+	var input = document.getElementById('bidPrice');
+	input.value = price;
+
+	timeout_id = setTimeout(function() {
+		buy(price);
+	}, (left_time - shot_time) * 1000);
+}
+
+var buy = function(price) {
+	console.log("buy--price:" + price);
+	var input = document.getElementById('bidPrice');
+	input.value = price;
+
+	var btn = document.getElementById('auctionStatus1').children[1].children[0];
+	btn.click();
+}
+
+var buyFun = function(price, shot_time) {
+	console.log("buyFun-price:" + price);
+	console.log("buyFun-shot-time" + shot_time);
+
+	/*
 	var timeString = document.getElementById('product-intro').children[1].children[1].children[4].children[0].innerText;
 	var str = timeString.replace("小时", ",").replace("分", ",").replace("秒", ",");
 	var strs = new Array(); //定义一数组 
@@ -23,7 +133,7 @@ var buyFun = function(price, add_price, shot_time, checkbox) {
 	}
 	console.log("剩余时间:" + strs[0] + ":" + strs[1] + ":" + strs[2]);
 	console.log("等待" + secs + "秒");
-
+*/
 	setTimeout(function() {
 		var input;
 		var lastPrice = 0;
@@ -38,7 +148,8 @@ var buyFun = function(price, add_price, shot_time, checkbox) {
 		// });
 
 		var interval = setInterval(function() {
-			input = document.getElementById('bid-info').children[0].children[1];
+			input = document.getElementById('bidPrice');
+			//input = document.getElementById('bid-info').children[0].children[1];
 			timeString = document.getElementById('product-intro').children[1].children[1].children[4].children[0].innerText;
 			str = timeString.replace("小时", ",").replace("分", ",").replace("秒", ",");
 			strs = str.split(","); //字符分割
@@ -71,77 +182,10 @@ var buyFun = function(price, add_price, shot_time, checkbox) {
 						input.value = parseInt(lastPrice) + parseInt(add_price);
 					}
 				}
-				console.log("设置价格:" + input.value + "元");
-				console.log("提交!!!!");
+				console.log("set price:" + input.value);
+				console.log("submit!!!!");
 				document.getElementById('buy-btn').click();
 			}
 		}, 300);
 	}, (secs - 60) * 1000);
 };
-
-chrome.extension.onRequest.addListener( //监听扩展程序进程或内容脚本发送的请求
-	function(request, sender, sendResponse) {
-		if (request.action == "submit") {
-			console.log("上限价格:" + request.price + "元");
-			console.log("增加幅度:" + request.add_price + "元");
-			console.log("提交时间:最后" + request.shot_time + "秒");
-			console.log("仅最后时刻提交上限价格:" + request.checkbox);
-
-
-			var keyText = document.getElementById('bid-info').children[0].children[0].innerText;
-			if (keyText == "即将拍卖") {
-				console.log("即将拍卖");
-				///////time countdown
-				var timeString = document.getElementById('product-intro').children[1].children[1].children[4].children[0].innerText;
-				var str = timeString.replace("小时", ",").replace("分", ",").replace("秒", ",");
-				var strs = new Array(); //定义一数组 
-				var secs = 0;
-				strs = str.split(","); //字符分割
-				if (strs.length == 4) {
-					secs = strs[0] * 3600;
-					secs += strs[1] * 60;
-					secs += parseInt(strs[2]);
-				} else if (strs.length == 3) {
-					secs = strs[0] * 60;
-					secs += parseInt(strs[1]);
-				} else if (strs.length == 2) {
-					secs = parseInt(strs[0]);
-				} else {
-					alert("Get left time error:" + timeString);
-				}
-				console.log("距离开拍:" + strs[0] + ":" + strs[1] + ":" + strs[2]);
-				console.log("等待" + secs + "秒" + "开拍");
-				sendResponse({
-					kw: "设置成功"
-				});
-
-				setTimeout(function() {
-					buyFun(request.price, request.add_price, request.shot_time, request.checkbox);
-				}, (secs + 60) * 1000);
-			} else {
-				///////price box
-				//var inputValue = document.getElementById('bid-info').children[0].children[1].value;
-				// input.value = 77;
-				//sendResponse({ kw: value });
-				//console.log("my price" + inputValue);
-
-				///////current price
-				// var lastPrice = document.getElementById('bidRecordItem').children[0].children[0].children[1].innerText;
-				// console.log("last price:" + lastPrice);
-				//sendResponse({ kw: lastPrice.innerText});
-
-				///////submit btn
-				//var btn = document.getElementById('buy-btn');
-				//btn.click();
-				//sendResponse({ kw: btn.innerHTML });
-
-				///////time countdown
-				sendResponse({
-					kw: "设置成功"
-				});
-				
-				buyFun(request.price, request.add_price, request.shot_time, request.checkbox);
-			}
-		}
-	}
-);
