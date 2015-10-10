@@ -6,6 +6,14 @@ function getRamdomNumber() {
 	return num;
 }
 
+function handle_response(response) {
+    if (response.result == "200") {
+        show_msg("成功抢拍一次...");
+    } else {
+        show_msg("失败了..." + response.message);
+    }
+}
+
 chrome.extension.onMessage.addListener(
 	function(msg, _, sendResponse) {
 		if (msg.add) {
