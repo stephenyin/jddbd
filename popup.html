@@ -1,24 +1,26 @@
-<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="content-type" content="text/html;charset=utf-8">
-<title>京东夺宝岛自动出价器.</title></head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<style type="text/css">
+		body {  
+        min-width: 357px;  
+        overflow-x: hidden;  
+      }  
+	</style>
+	<title>京东夺宝岛出价器</title>
+</head>
 <body>
-<pre>京东夺宝岛自动出价器.<br /></pre>
-<!-- <a id="a" href="#">点击获取输入框中的关键字<br /></a> -->
-<text href="#">出价(元)<br /></text>
-<input type="text" id="price" value="" size="30"   
-          onmouseover=this.focus();this.select();   
-          onclick="if(value==defaultValue){value='';this.style.color='#000'}"   
-          onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999" />
+	<article class="markdown-body entry-content" itemprop="mainContentOfPage"><h1><a id="user-content-京东夺宝岛出价器" class="anchor" href="#京东夺宝岛出价器" aria-hidden="true"><span class="octicon octicon-link"></span></a>京东夺宝岛出价器</h1>
 
-<text href="#">出价时间(秒)<br /></text>
-<input type="text" id="shot_time" value="1" size="30"   
-          onmouseover=this.focus();this.select();   
-          onclick="if(value==defaultValue){value='';this.style.color='#000'}"   
-          onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="color:#999" />
+<h2><a id="user-content-使用说明" class="anchor" href="#使用说明" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用说明</h2>
 
-<button id="submit_btn" type="button">确定</button>
-<script src="popup.js"></script>
+<ol>
+<li>打开想要抢拍的夺宝岛页面。</li>
+<li>工具栏出现在页面上方，您可以选择输入自己的上限价（愿意承受的最高价格）。</li>
+<li>点击 [上限价拍] 按钮， 可以在设定的 [上限价出价时间] 出 [上限价] 。</li>
+<li>点击 [自动抢拍] 按钮， 可以直接以可能的最低价（当前价格＋[抢拍加价]）抢拍，若当前价超出 [上限价] 则会自动放弃。</li>
+</ol>
+
+</article>
 </body>
 </html>

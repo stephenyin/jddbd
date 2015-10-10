@@ -1,37 +1,23 @@
 var map = new Map();
 
 chrome.runtime.onMessage.addListener(
-	function(msg, _, sendResponse) {
+	function(msg, sender, sendResponse) {
 		if (msg.add) {
-			console.log("recv msg from tab:" + msg.tab_id);
-			console.log("price:" + msg.price);
-			console.log("shot-time:" + msg.shot_time);
-
-			sendResponse("Got your add message from tab " + msg.tab_id);
-
-			chrome.tabs.sendMessage(msg.tab_id, {
-					add: true,
-					price: msg.price,
-					shot_time: msg.shot_time
-				},
-				function(response) {
-					console.log("wait:" + response.time + "secs");
-					map.put(msg.tab_id, setTimeout(function() {
-						chrome.tabs.update(msg.tab_id, {
-							selected: true
-						});
-					}, response.time - 10));	
+			console.log("recv add msg from tab:" + sender.tab.id);
+			console.log("wait:" + msg.left_time + "secs");
+			map.put(sender.tab.id, setTimeout(function() {
+				chrome.tabs.update(sender.tab.id, {
+					selected: true
 				});
+			}, msg.left_time - 10));
+
+			sendResponse("Got your add message from tab " + sender.tab.id);
 
 			return true;
 		} else if (msg.del) {
-			clearTimeout(map.get(msg.tab_id));
-			map.remove(msg.tab_id);
-
-			chrome.tabs.sendMessage(msg.tab_id, {
-					del: true
-				},
-				function(response) {});
+			console.log("recv del msg from tab:" + sender.tab.id);
+			clearTimeout(map.get(sender.tab.id));
+			map.remove(sender.tab.id);
 			return true;
 		}
 	}
@@ -81,7 +67,7 @@ Map.prototype.size = function() {
 
 
 Map.prototype.remove = function(key) {
-		delete this.container[key];
-	}
-	
+	delete this.container[key];
+}
+
 // chrome.tabs.update(option_tab[0].id,{selected:true});
